@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var headers = require ('../web/http-helpers.js').headers;
+var helpers = require ('../web/http-helpers.js');
 
 
 /*
@@ -27,18 +27,26 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  var urls;//get list of urls -- read file 
+  fs.readFile(exports.paths.list, function(err, fileContents) {
+    urls = fileContents.toString().split('\n');
+    if (callback) {
+      callback(urls);
+    }
+  });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(target, callback) {
+  exports.readListOfUrls(callback);
 };
 
 exports.addUrlToList = function(res, asset, input, callback) {
   fs.appendFile(asset, input, (err, data) => {
     if (!err) {
-      callback(302, headers, null, err);
+      callback(302, helpers.headers, null, err);
     } else {
-      callback(404, headers, null, err);
+      callback(404, helpers.headers, null, err);
     }
   });
 };
