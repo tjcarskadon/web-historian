@@ -13,7 +13,7 @@ exports.handleRequest = function (req, res) {
   var headers = helpers.headers; 
 
   //callback function to be passed to serveAssests
-  var cb = (statCode, headers, contents, err) => {
+  var handleEnd = (statCode, headers, contents, err) => {
     res.writeHead(statCode, headers);
     //log satus and err - if not err will log undefined
     console.log(statCode, err, 'ERROR LOG');
@@ -24,36 +24,26 @@ exports.handleRequest = function (req, res) {
   //refactor to move the call to serveAssets out of the router
   var url = URL.parse(req.url).pathname;
 
-  //basic working solution for serving index.html
-  // if (url === '/') {
-  //   fileName = '/index.html';
-  //   asset = archive.paths.siteAssets + fileName;
-  //   helpers.serveAssets(res, asset, cb);
-  // } else {
-  //   res.writeHead(404, headers);
-  //   console.log('404 Error', headers);
-  //   res.end();
-  // }
-
   switch (url) {
   case '/' :
-    fileName = '/index.html';
-    asset = archive.paths.siteAssets + fileName; 
+    if (req.method === 'POST') {
+      var site = '';
+      req.on('data', (chunk) => {
+        site += chunk.toString().substr(4);
+        site += '\n';
+      }).on('end', () => {
+        archive.addUrlToList(res, archive.paths.list, site, handleEnd);
+      });
+    
+    } else {
+      fileName = '/index.html';
+      asset = archive.paths.siteAssets + fileName; 
+      helpers.serveAssets(res, asset, handleEnd);
+    }
     break;
-  default : 
+  default :
     asset = archive.paths.archivedSites + url;
+    helpers.serveAssets(res, asset, handleEnd);
   }
 
-
-  helpers.serveAssets(res, asset, cb);
-
-
-  // var filename =  path.join(url;
-
-
-  // res.end(archive.paths.list);
 };
-
-
-
-// /Users/student/Desktop/historian/web/historian/web/public/index.html

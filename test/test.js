@@ -61,7 +61,7 @@ describe('server', function() {
         request
           .post('/')
           .type('form')
-          .send({ url: url })
+          .send({ url: url }) //www.example.com
           .expect(302, function (err) {
             if (!err) {
               var fileContents = fs.readFileSync(archive.paths.list, 'utf8');
