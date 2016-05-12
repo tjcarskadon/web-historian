@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var helpers = require ('../web/http-helpers.js');
+var http = require('http');
 
 
 /*
@@ -29,10 +30,11 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
   var urls;//get list of urls -- read file 
+
   fs.readFile(exports.paths.list, function(err, fileContents) {
     urls = fileContents.toString().split('\n');
     if (callback) {
-      callback(urls);
+      callback(urls); //urls is an array
     }
   });
 };
@@ -58,18 +60,38 @@ exports.addUrlToList = function(input, callback) {
 
 exports.isUrlArchived = function(target, callback) {
   fs.readdir(exports.paths.archivedSites, (err, files) => {
-    callback( _(files).contains(target) );
+    callback(_(files).contains(target), target); 
+
+    //_(files).filter( (file) => _(files).contains(file));
+
+
   });
 
 
 };
 
 exports.downloadUrls = function(target) {
-  _.each(target, (site) => {
-    fs.open(exports.paths.archivedSites + '/' + site, 'w', (err, fd) => {
-      err && console.log(err);
+
+  var options = {
+    host: target,
+    path: '/index.html',
+    port: 80,
+    method: 'GET'
+  };
+
+  http.get(options, (res) => {
+    res.on('data', (chunk) => {
+      fs.writeFile(exports.paths.archivedSites + '/' + target, chunk.toString());
+    }).on('error', (err) => {
+      console.log('ERROR:', err);
     });
   });
+  /****Version that passed the tests******/
+  // _.each(target, (site) => {
+  //   fs.open(exports.paths.archivedSites + '/' + site, 'w', (err, fd) => {
+  //     err && console.log(err);
+  //   });
+  // });
 
 
 };

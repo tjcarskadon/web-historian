@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var helpers = require ('./http-helpers.js');
+var worker = require('../workers/htmlfetcher.js');
 // var initialize = require('./initialize.js');
 // require more modules/folders here!
 
@@ -37,6 +38,7 @@ exports.handleRequest = function (req, res) {
             helpers.serveAssets(res, archive.paths.archivedSites + '/' + site, handleEnd);
           } else {
             archive.addUrlToList(site + '\n', handleEnd);
+            worker.fetchHtml();
             helpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', handleEnd);
           }
         });
