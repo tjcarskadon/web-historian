@@ -38,7 +38,12 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(target, callback) {
-  exports.readListOfUrls(callback);
+  var urlInExist = (urls) => {
+    callback( _(urls).contains(target) );
+  };
+
+  exports.readListOfUrls(urlInExist);
+
 };
 
 exports.addUrlToList = function(input, callback) {
@@ -52,17 +57,10 @@ exports.addUrlToList = function(input, callback) {
 };
 
 exports.isUrlArchived = function(target, callback) {
-  
   fs.readdir(exports.paths.archivedSites, (err, files) => {
-    if (!err) {
-      _.each(files, file => {
-        callback(file);
-      });
-    } else {
-      console.log('ERROR', err);
-    }
-
+    callback( _(files).contains(target) );
   });
+
 
 };
 
