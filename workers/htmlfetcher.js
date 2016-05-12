@@ -5,7 +5,7 @@
 //call our download URL's on that target.  
 var archives = require('../helpers/archive-helpers.js');
 var _ = require('underscore');
-var CronJob = require('cron').CronJob;
+var fs = require('fs');
 
 exports.fetchHtml = () => {
 
@@ -36,9 +36,7 @@ exports.fetchHtml = () => {
 
 };
 
-new CronJob('1 * * * * *', function() {
-  exports.fetchHtml();
-}, null, true, 'America/Los_Angeles');
+exports.fetchHtml();
 
 
  

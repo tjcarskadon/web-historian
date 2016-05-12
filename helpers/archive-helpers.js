@@ -74,7 +74,7 @@ exports.downloadUrls = function(target) {
 
   var options = {
     host: target,
-    path: '/index.html',
+    path: '/',
     port: 80,
     method: 'GET'
   };
