@@ -23,16 +23,23 @@ exports.handleRequest = function (req, res) {
   //router: might need to put this in another module??
   //refactor to move the call to serveAssets out of the router
   var url = URL.parse(req.url).pathname;
-
   switch (url) {
   case '/' :
     if (req.method === 'POST') {
       var site = '';
       req.on('data', (chunk) => {
         site += chunk.toString().substr(4);
-        site += '\n';
+        // site += '\n';  
       }).on('end', () => {
-        archive.addUrlToList(site, handleEnd);
+        //if page is archived then redirect to that page
+        archive.isUrlArchived(site, (expected) => {
+          if (expected) {
+            helpers.serveAssets(res, archive.paths.archivedSites + '/' + site, handleEnd);
+          } else {
+            archive.addUrlToList(site + '\n', handleEnd);
+            helpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', handleEnd);
+          }
+        });
       });
     
     } else {
@@ -41,8 +48,13 @@ exports.handleRequest = function (req, res) {
       helpers.serveAssets(res, asset, handleEnd);
     }
     break;
+  case '/styles.css' : 
+    asset = archive.paths.siteAssets + url; 
+    helpers.serveAssets(res, asset, handleEnd);
+    break;
   default :
     asset = archive.paths.archivedSites + url;
+    console.log('the asset is ', asset);
     helpers.serveAssets(res, asset, handleEnd);
   }
 
