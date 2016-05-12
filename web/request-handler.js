@@ -38,8 +38,8 @@ exports.handleRequest = function (req, res) {
             helpers.serveAssets(res, archive.paths.archivedSites + '/' + site, handleEnd);
           } else {
             archive.addUrlToList(site + '\n', handleEnd);
-            worker.fetchHtml();
             helpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', handleEnd);
+            //set a timeout to return to index after seeing loading page
           }
         });
       });

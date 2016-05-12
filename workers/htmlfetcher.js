@@ -5,6 +5,7 @@
 //call our download URL's on that target.  
 var archives = require('../helpers/archive-helpers.js');
 var _ = require('underscore');
+var CronJob = require('cron').CronJob;
 
 exports.fetchHtml = () => {
 
@@ -35,9 +36,9 @@ exports.fetchHtml = () => {
 
 };
 
-//check our list of sites (periodically?)
-//compare it to our curerntly loaded list of URLs
-  //if the sites in our list aren't archived
-    //go fetch
+new CronJob('1 * * * * *', function() {
+  exports.fetchHtml();
+}, null, true, 'America/Los_Angeles');
 
-  // 
+
+ 
