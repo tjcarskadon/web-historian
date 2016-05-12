@@ -1,0 +1,6 @@
+(statCode, headers, contents, err) => {
+    res.writeHead(statCode, headers);
+    //log satus and err - if not err will log undefined
+    console.log(statCode, err, 'ERROR LOG');
+    res.end(contents);
+  }

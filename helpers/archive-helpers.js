@@ -41,8 +41,8 @@ exports.isUrlInList = function(target, callback) {
   exports.readListOfUrls(callback);
 };
 
-exports.addUrlToList = function(res, asset, input, callback) {
-  fs.appendFile(asset, input, (err, data) => {
+exports.addUrlToList = function(input, callback) {
+  fs.appendFile(exports.paths.list, input, (err, data) => {
     if (!err) {
       callback(302, helpers.headers, null, err);
     } else {
@@ -51,8 +51,27 @@ exports.addUrlToList = function(res, asset, input, callback) {
   });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(target, callback) {
+  
+  fs.readdir(exports.paths.archivedSites, (err, files) => {
+    if (!err) {
+      _.each(files, file => {
+        callback(file);
+      });
+    } else {
+      console.log('ERROR', err);
+    }
+
+  });
+
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(target) {
+  _.each(target, (site) => {
+    fs.open(exports.paths.archivedSites + '/' + site, 'w', (err, fd) => {
+      err && console.log(err);
+    });
+  });
+
+
 };

@@ -32,7 +32,7 @@ exports.handleRequest = function (req, res) {
         site += chunk.toString().substr(4);
         site += '\n';
       }).on('end', () => {
-        archive.addUrlToList(res, archive.paths.list, site, handleEnd);
+        archive.addUrlToList(site, handleEnd);
       });
     
     } else {
