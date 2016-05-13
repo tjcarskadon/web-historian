@@ -3,7 +3,9 @@ var path = require('path');
 var _ = require('underscore');
 var helpers = require ('../web/http-helpers.js');
 var http = require('http');
-
+var Promise = require ('bluebird');
+var rp = require('request-promise');
+Promise.promisifyAll(http);
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -34,7 +36,7 @@ exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, function(err, fileContents) {
     urls = fileContents.toString().split('\n');
     if (callback) {
-      callback(urls); //urls is an array
+      callback(null, urls); //urls is an array
     }
   });
 };
@@ -60,7 +62,7 @@ exports.addUrlToList = function(input, callback) {
 
 exports.isUrlArchived = function(target, callback) {
   fs.readdir(exports.paths.archivedSites, (err, files) => {
-    callback(_(files).contains(target), target); 
+    callback(null, _(files).contains(target), target); 
 
     //_(files).filter( (file) => _(files).contains(file));
 
@@ -72,26 +74,30 @@ exports.isUrlArchived = function(target, callback) {
 
 exports.downloadUrls = function(target) {
 
+  //for rp we have to pass in a uri
+  //the target is just the 
+
   var options = {
+    protocol:'http',
     host: target,
     path: '/',
     port: 80,
     method: 'GET'
   };
 
-  http.get(options, (res) => {
-    res.on('data', (chunk) => {
-      fs.writeFile(exports.paths.archivedSites + '/' + target, chunk.toString());
-    }).on('error', (err) => {
-      console.log('ERROR:', err);
-    });
-  });
-  /****Version that passed the tests******/
-  // _.each(target, (site) => {
-  //   fs.open(exports.paths.archivedSites + '/' + site, 'w', (err, fd) => {
-  //     err && console.log(err);
+rp('http://' + target).then(htmlString => 
+  fs.writeFile(exports.paths.archivedSites + '/' + target, htmlString))
+  .catch(e => null);
+
+/**************WORKS BUT NOT PROMISY******************/
+  // http.get(options, (res) => {
+  //   res.on('data', (chunk) => {
+  //     fs.writeFile(exports.paths.archivedSites + '/' + target, chunk.toString());
+  //   }).on('error', (err) => {
+  //     console.log('ERROR:', err);
   //   });
   // });
+
 
 
 };

@@ -8,13 +8,14 @@ var worker = require('../workers/htmlfetcher.js');
 // var initialize = require('./initialize.js');
 // require more modules/folders here!
 
+
 exports.handleRequest = function (req, res) {
   var fileName = '';
   var asset = '';
   var headers = helpers.headers; 
 
   //callback function to be passed to serveAssests
-  var handleEnd = (statCode, headers, contents, err) => {
+  var handleEnd = (err, statCode, headers, contents) => {
     res.writeHead(statCode, headers);
     //log satus and err - if not err will log undefined
     console.log(statCode, err, 'ERROR LOG');
@@ -33,7 +34,7 @@ exports.handleRequest = function (req, res) {
         // site += '\n';  
       }).on('end', () => {
         //if page is archived then redirect to that page
-        archive.isUrlArchived(site, (expected) => {
+        archive.isUrlArchived(site, (err, expected) => {
           if (expected) {
             helpers.serveAssets(res, archive.paths.archivedSites + '/' + site, handleEnd);
           } else {
@@ -56,7 +57,6 @@ exports.handleRequest = function (req, res) {
     break;
   default :
     asset = archive.paths.archivedSites + url;
-    console.log('the asset is ', asset);
     helpers.serveAssets(res, asset, handleEnd);
   }
 

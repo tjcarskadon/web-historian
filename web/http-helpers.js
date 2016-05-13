@@ -22,13 +22,13 @@ exports.serveAssets = function(res, asset, callback) {
 
   var ext = path.extname(asset); //.css
 
-  exports.headers['Content-Type'] = exports.extensions[ext];
+  exports.headers['Content-Type'] = exports.extensions[ext] || 'text/html';
   
   fs.readFile(asset, function(err, fileContents) {
     if (!err) {
-      callback(200, exports.headers, fileContents);
+      callback(err, 200, exports.headers, fileContents);
     } else {
-      callback(404, exports.headers, fileContents, err);
+      callback(err, 404, exports.headers, fileContents);
     }
   });
 
